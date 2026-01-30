@@ -1,0 +1,139 @@
+[
+  {
+    "name": "user",
+    "fields": [
+      {
+        "name": "name",
+        "type": "text",
+        "description": "Full name of the user",
+        "options": null
+      },
+      {
+        "name": "email",
+        "type": "text",
+        "description": "Email address for login",
+        "options": null
+      },
+      {
+        "name": "password",
+        "type": "text",
+        "description": "User password",
+        "options": null
+      },
+      {
+        "name": "role",
+        "type": "text",
+        "description": "User role: candidate or recruiter",
+        "options": [
+          "candidate",
+          "recruiter"
+        ]
+      },
+      {
+        "name": "github_link",
+        "type": "text",
+        "description": "Link to GitHub profile",
+        "options": null
+      },
+      {
+        "name": "linkedin_link",
+        "type": "text",
+        "description": "Link to LinkedIn profile",
+        "options": null
+      },
+      {
+        "name": "resume_url",
+        "type": "text",
+        "description": "URL of the uploaded resume",
+        "options": null
+      }
+    ]
+  },
+  {
+    "name": "job",
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "description": "Job title",
+        "options": null
+      },
+      {
+        "name": "description",
+        "type": "rich_text",
+        "description": "Detailed job description",
+        "options": null
+      },
+      {
+        "name": "skills",
+        "type": "array",
+        "description": "Required skills for the job",
+        "options": null
+      },
+      {
+        "name": "experience_level",
+        "type": "text",
+        "description": "Required experience level",
+        "options": [
+          "Entry",
+          "Mid",
+          "Senior",
+          "Lead"
+        ]
+      },
+      {
+        "name": "min_ai_score",
+        "type": "number",
+        "description": "Minimum AI score required for this job",
+        "options": null
+      },
+      {
+        "name": "recruiter_id",
+        "type": "text",
+        "description": "ID of the recruiter who posted the job",
+        "options": null
+      }
+    ]
+  },
+  {
+    "name": "application",
+    "fields": [
+      {
+        "name": "job_id",
+        "type": "text",
+        "description": "ID of the job applied for",
+        "options": null
+      },
+      {
+        "name": "candidate_id",
+        "type": "text",
+        "description": "ID of the candidate applying",
+        "options": null
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "description": "Current status of the application",
+        "options": [
+          "Applied",
+          "Screening",
+          "Interviewing",
+          "Offer",
+          "Rejected"
+        ]
+      },
+      {
+        "name": "ai_score",
+        "type": "number",
+        "description": "AI Interview score",
+        "options": null
+      },
+      {
+        "name": "interview_stage",
+        "type": "text",
+        "description": "Current stage of the interview process",
+        "options": null
+      }
+    ]
+  }
+]

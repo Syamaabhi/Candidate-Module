@@ -1,4 +1,5 @@
 function Profile({ user, onUpdateUser }) {
+    alert("ggggg");
   const [formData, setFormData] = React.useState({
     name: '',
     email: '',

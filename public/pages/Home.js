@@ -1,122 +1,453 @@
+// Important: DO NOT remove this `ErrorBoundary` component.
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center p-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                <div className="icon-triangle-alert text-2xl text-red-600"></div>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
+            <p className="text-gray-600 mb-6">We're sorry, but something unexpected happened.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn btn-primary"
+            >
+              Reload Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 function Home({ onNavigate, user }) {
+//   try {
+    
+    const [jobs, setJobs] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [selectedJob, setSelectedJob] = React.useState(null);
+    const [isApplicationModalOpen, setIsApplicationModalOpen] = React.useState(false);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [alert, setAlert] = React.useState(null); // { type, message }
+const [activeTab, setActiveTab] = React.useState("job");
+    // Search filters state
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const [locationFilter, setLocationFilter] = React.useState('');
+ React.useEffect(() => {
+    fetchJobs();
+}, []); // run only once on mount
+
+const fetchJobs = async () => {
+  try {
+    setLoading(true);
+    const data = await getJobs();
+    console.log("Fetched jobs:", data); // for DevTools
+    
+    setJobs(data);
+  } catch (e) {
+    window.alert("Failed to load jobs");
+  } finally {
+    setLoading(false);
+  }
+};
+
+    const showAlert = (type, message) => {
+      setAlert({ type, message });
+      // Auto dismiss after 5 seconds
+      setTimeout(() => setAlert(null), 5000);
+    };
+
+    const handleApplyClick = (job) => {
+       if (!user) {
+          onNavigate('login');
+          return;
+      }
+        console.log("Apply clicked:", job);
+      setSelectedJob(job);
+      setIsApplicationModalOpen(true);
+    };
+
+    const handleApplicationSubmit = async (formData) => {
+       if (!user) {
+          onNavigate('login');
+          return;
+      }
+        window.alert(formData);
+      if (!selectedJob) return;
+
+      try {
+        setIsSubmitting(true);
+        const applicationData = {
+  job_title: selectedJob.title,
+  job_company: selectedJob.company,
+  ...formData,
+  applied_at: new Date().toISOString()
+};
+window.alert(applicationData);
+//mm
+ const data = await submitApplication(applicationData);
+   if (!user) {
+          onNavigate('login');
+          return;
+      }
+        setIsApplicationModalOpen(false);
+        setSelectedJob(null);
+        showAlert('success', 'Application submitted successfully! Good luck!');
+      } catch (error) {
+        showAlert('error', 'Failed to submit application. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+  const filteredJobs = jobs.filter(job => {
+  const { title, company, location } = job;
+  if (!title || !company || !location) return false;
   return (
-    <div className="space-y-16">
-        {/* Hero Section */}
-        <div className="relative bg-white overflow-hidden rounded-2xl shadow-xl">
-            <div className="max-w-7xl mx-auto">
-                <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32 p-8 lg:p-12">
-                    <main className="mt-10 mx-auto max-w-7xl sm:mt-12 md:mt-16 lg:mt-20 xl:mt-28">
-                        <div className="sm:text-center lg:text-left">
-                            <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                                <span className="block xl:inline">Find your dream job with</span>{' '}
-                                <span className="block text-blue-600 xl:inline">AI Intelligence</span>
-                            </h1>
-                            <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                                Experience the future of hiring. Our AI-driven platform matches you with the perfect opportunities and streamlines the interview process.
-                            </p>
-                            <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                                <div className="rounded-md shadow">
-                                    <button
-                                        onClick={() => onNavigate(user ? 'jobs' : 'register')}
-                                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
-                                    >
-                                        Get Started
-                                    </button>
+    (title + company).toLowerCase().includes(searchTerm.toLowerCase()) &&
+    location.toLowerCase().includes(locationFilter.toLowerCase())
+  );
+});
+//gg
+
+
+
+    return (
+        
+      <div className="min-h-screen bg-[var(--bg-light)]" data-name="app">
+        <Header />
+       
+
+        {/* Alert Container */}
+        {alert && (
+            <Alert 
+                type={alert.type} 
+                message={alert.message} 
+                onClose={() => setAlert(null)} 
+            />
+        )}
+
+        {/* Hero / Search Section */}
+        <div className="bg-[var(--primary)] py-12 sm:py-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-6">
+                    Find your dream job now
+                </h1>
+                <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+                    5 lakh+ jobs for you to explore
+                </p>
+                
+                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-2 sm:p-4 flex flex-col sm:flex-row gap-3">
+                    <div className="flex-1 flex items-center px-4 py-2 border-b sm:border-b-0 sm:border-r border-gray-200">
+                        <div className="icon-search text-gray-400 mr-3 text-xl"></div>
+                        <input 
+                            type="text" 
+                            placeholder="Skills, Designations, Companies"
+                            className="w-full outline-none text-gray-700 placeholder-gray-400"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex-1 flex items-center px-4 py-2 border-b sm:border-b-0 sm:border-r border-gray-200">
+                         <div className="icon-map-pin text-gray-400 mr-3 text-xl"></div>
+                         <select 
+                            className="w-full outline-none text-gray-700 bg-transparent cursor-pointer"
+                            value={locationFilter}
+                            onChange={(e) => setLocationFilter(e.target.value)}
+                        >
+                             <option value="">All Locations</option>
+                             <option value="Remote">Remote</option>
+                             <option value="Bangalore">Bangalore</option>
+                             <option value="Mumbai">Mumbai</option>
+                             <option value="Delhi">Delhi</option>
+                             <option value="Hyderabad">Hyderabad</option>
+                         </select>
+                    </div>
+                    <button className="btn btn-primary px-8 rounded-lg shadow-md">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+             {/*test */}
+        {selectedJob && (
+  <div className="bg-white border-b border-gray-200 shadow-sm">
+    <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {selectedJob.title}
+          </h1>
+          <p className="text-gray-600 mt-1">
+            {selectedJob.company} • {selectedJob.location}• {selectedJob.description}
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+           Location: {selectedJob.location}
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            Type: {selectedJob.type}
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            salary_range: {selectedJob.salary_range}
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            Posted at: {selectedJob.posted_at}
+          </p>
+ </div>
+ <button
+          onClick={() => setIsApplicationModalOpen(true)}
+          className="btn btn-primary"
+        >
+          Apply Now
+        </button>
+      </div>
+       {/* Tabs */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="flex space-x-6">
+          <button
+            onClick={() => setActiveTab("job")}
+            className={`pb-2 font-medium ${
+              activeTab === "job"
+                ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
+                : "text-gray-500"
+            }`}
+          >
+            Job Details
+          </button>
+          <button
+            onClick={() => setActiveTab("company")}
+            className={`pb-2 font-medium ${
+              activeTab === "company"
+                ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
+                : "text-gray-500"
+            }`}
+          >
+            Company Details
+          </button>
+        </nav>
+      </div>
+{/* Tab Content */}
+      {activeTab === "job" && (
+        <div>
+          <h3 className="font-semibold text-lg mb-2">Job Description</h3>
+          <p className="text-gray-700 whitespace-pre-line">
+            {selectedJob.description}
+          </p>
+
+          <h3 className="font-semibold text-lg mt-6 mb-2">Required Skills</h3>
+          <div className="flex flex-wrap gap-2">
+             <div className="mt-4 text-sm text-gray-600">
+            <p><strong>Industry:</strong> {selectedJob.idescription || "N/A"}</p>
+            <p><strong>Company Size:</strong> {selectedJob.company_size || "N/A"}</p>
+            <p><strong>Website:</strong> {selectedJob.company_website || "N/A"}</p>
+          </div>
+            {/* {(Array.isArray(selectedJob.skills)
+              ? selectedJob.skills
+              : selectedJob.skills?.split(",")
+            ).map((skill, i) => (
+              <span key={i} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                {skill.trim()}
+              </span>
+            ))} */}
+          </div>
+        </div>
+      )}
+
+{activeTab === "company" && (
+        <div>
+          <h3 className="font-semibold text-lg mb-2">About Company</h3>
+          <p className="text-gray-700">
+            {selectedJob.company_description || "Company information not available."}
+          </p>
+
+          <div className="mt-4 text-sm text-gray-600">
+            <p><strong>Industry:</strong> {selectedJob.idescription || "N/A"}</p>
+            <p><strong>Company Size:</strong> {selectedJob.company_size || "N/A"}</p>
+            <p><strong>Website:</strong> {selectedJob.company_website || "N/A"}</p>
+          </div>
+        </div>
+      )}
+
+ </div></div>
+            )}
+
+{/* syama */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                
+                {/* Filters Sidebar (Mock) */}
+                <div className="hidden lg:block lg:col-span-1">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-24">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-bold text-gray-900">All Filters</h3>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-900 mb-3">Work Mode</h4>
+                                <div className="space-y-2">
+                                    {['Work from office', 'Remote', 'Hybrid'].map((mode) => (
+                                        <label key={mode} className="flex items-center">
+                                            <input type="checkbox" className="rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
+                                            <span className="ml-2 text-sm text-gray-600">{mode}</span>
+                                        </label>
+                                    ))}
                                 </div>
-                                <div className="mt-3 sm:mt-0 sm:ml-3">
-                                    <button
-                                        onClick={() => onNavigate('jobs')}
-                                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10"
-                                    >
-                                        Browse Jobs
-                                    </button>
+                            </div>
+                             <div>
+                                <h4 className="text-sm font-semibold text-gray-900 mb-3">Experience</h4>
+                                <div className="space-y-2">
+                                    <div className="w-full bg-gray-200 rounded-full h-1.5 mb-4">
+                                        <div className="bg-[var(--primary)] h-1.5 rounded-full" style={{width: '45%'}}></div>
+                                    </div>
+                                    <div className="flex justify-between text-xs text-gray-500">
+                                        <span>0 Yrs</span>
+                                        <span>30 Yrs</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-900 mb-3">Department</h4>
+                                <div className="space-y-2">
+                                    {['Engineering', 'Design', 'Product', 'Sales', 'Marketing'].map((dept) => (
+                                        <label key={dept} className="flex items-center">
+                                            <input type="checkbox" className="rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
+                                            <span className="ml-2 text-sm text-gray-600">{dept}</span>
+                                        </label>
+                                    ))}
                                 </div>
                             </div>
                         </div>
-                    </main>
-                </div>
-            </div>
-            <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 bg-blue-50 flex items-center justify-center">
-                 <div className="p-12">
-                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm mx-auto transform rotate-2 hover:rotate-0 transition-transform duration-300">
-                        <div className="flex items-center mb-4">
-                             <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                <div className="icon-check"></div>
-                             </div>
-                             <div className="ml-3">
-                                <div className="text-sm font-medium text-gray-900">Application Status</div>
-                                <div className="text-xs text-gray-500">Just Now</div>
-                             </div>
-                        </div>
-                        <p className="text-gray-600 text-sm">Your AI interview score of 85% has qualified you for the next round!</p>
-                     </div>
-                 </div>
-            </div>
-        </div>
-
-        {/* Features Grid */}
-        <div className="py-12 bg-white rounded-2xl shadow-sm p-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="lg:text-center">
-                    <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">Features</h2>
-                    <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                        A better way to get hired
-                    </p>
+                    </div>
                 </div>
 
-                <div className="mt-10">
-                    <dl className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-                        <div className="relative">
-                            <dt>
-                                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                                    <div className="icon-brain-circuit text-xl"></div>
-                                </div>
-                                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">AI-Powered Matching</p>
-                            </dt>
-                            <dd className="mt-2 ml-16 text-base text-gray-500">
-                                Our algorithms analyze your skills and resume to find jobs where you'll truly shine.
-                            </dd>
+                {/* Job List */}
+                <div className="col-span-1 lg:col-span-3">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-bold text-gray-900">
+                            {filteredJobs.length} Jobs Based on your search
+                        </h2>
+                        <div className="flex items-center text-sm text-gray-500">
+                            <span>Sort by:</span>
+                            <select className="ml-2 border-none bg-transparent font-medium text-gray-900 focus:ring-0 cursor-pointer">
+                                <option>Relevance</option>
+                                <option>Date Posted</option>
+                            </select>
                         </div>
+                    </div>
 
-                        <div className="relative">
-                            <dt>
-                                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                                    <div className="icon-video text-xl"></div>
+                    {loading ? (
+                        <div className="space-y-4">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-pulse">
+                                    <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                                 </div>
-                                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Smart Interviews</p>
-                            </dt>
-                            <dd className="mt-2 ml-16 text-base text-gray-500">
-                                Take preliminary interviews with our AI assistant anytime, anywhere. Instant feedback.
-                            </dd>
+                            ))}
                         </div>
-
-                        <div className="relative">
-                            <dt>
-                                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                                    <div className="icon-file-text text-xl"></div>
+                    ) : (
+                        <div className="space-y-4">
+                            {filteredJobs.length > 0 ? (
+                                filteredJobs.map((job, index) => (
+      <JobCard 
+          key={index} 
+          job={job} 
+          onApply={handleApplyClick} 
+          onSelect={setSelectedJob}
+          
+      />
+      
+  ))
+  
+                            )
+                             : (
+                                <div className="bg-white rounded-xl p-10 text-center border border-gray-100">
+                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                                        <div className="icon-search-x text-2xl text-gray-400"></div>
+                                    </div>
+                                    <h3 className="text-lg font-medium text-gray-900">No jobs found</h3>
+                                    <p className="text-gray-500">Try adjusting your search filters.</p>
                                 </div>
-                                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Resume Analysis</p>
-                            </dt>
-                            <dd className="mt-2 ml-16 text-base text-gray-500">
-                                Get insights on your resume and how well it matches your target roles.
-                            </dd>
+                            )}
                         </div>
-
-                         <div className="relative">
-                            <dt>
-                                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                                    <div className="icon-chart-bar text-xl"></div>
-                                </div>
-                                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Real-time Tracking</p>
-                            </dt>
-                            <dd className="mt-2 ml-16 text-base text-gray-500">
-                                Never wonder where you stand. Track every step of your application in real-time.
-                            </dd>
-                        </div>
-                    </dl>
+                        
+                    )}
                 </div>
             </div>
-        </div>
-    </div>
-  );
+            
+        </main>
+
+        {/* Application Modal */}
+        <Modal 
+            isOpen={isApplicationModalOpen} 
+            onClose={() => setIsApplicationModalOpen(false)}
+            title="Apply for Job"
+        >
+            {selectedJob && (
+                <JobApplicationForm 
+                    job={selectedJob}
+                    onSubmit={handleApplicationSubmit}
+                    onCancel={() => setIsApplicationModalOpen(false)}
+                    isSubmitting={isSubmitting}
+                />
+            )}
+        </Modal>
+        
+        {/* Footer */}
+        <footer className="bg-white border-t border-gray-200 mt-12 py-10">
+             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+                <div className="mb-4 md:mb-0">
+                     <span className="text-xl font-bold text-gray-900 tracking-tight flex items-center">
+                        <div className="icon-briefcase text-[var(--primary)] mr-2"></div>
+                        JobSeek
+                     </span>
+                     <p className="text-sm text-gray-500 mt-2">Connecting talent with opportunity.</p>
+                </div>
+                <div className="flex space-x-6 text-sm text-gray-500">
+                    <a href="#" className="hover:text-[var(--primary)]">About Us</a>
+                    <a href="#" className="hover:text-[var(--primary)]">Privacy Policy</a>
+                    <a href="#" className="hover:text-[var(--primary)]">Terms & Conditions</a>
+                    <a href="#" className="hover:text-[var(--primary)]">Contact</a>
+                </div>
+                <div className="mt-4 md:mt-0 text-sm text-gray-400">
+                    &copy; 2026 JobSeek. All rights reserved.
+                </div>
+             </div>
+        </footer>
+      </div>
+      
+    );
+//   } catch (error) {
+//     console.error('App component error:', error);
+//     return null;
+//   }
 }
+
+// const root = ReactDOM.createRoot(document.getElementById('root'));
+// root.render(
+//   <ErrorBoundary>
+//     <App />
+//   </ErrorBoundary>
+// );
+

@@ -11,7 +11,9 @@ function getCurrentUser() {
 }
 
 function loginUser(userData) {
-  
+ 
+ //  alert(JSON.stringify(userData));
+ 
   localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
 }
 

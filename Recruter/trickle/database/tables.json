@@ -1,0 +1,95 @@
+[
+  {
+    "name": "job_listings",
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "description": "Job title",
+        "options": null
+      },
+      {
+        "name": "company",
+        "type": "text",
+        "description": "Company name",
+        "options": null
+      },
+      {
+        "name": "location",
+        "type": "text",
+        "description": "Job location",
+        "options": null
+      },
+      {
+        "name": "type",
+        "type": "text",
+        "description": "Employment type (Full-time, Part-time, etc.)",
+        "options": [
+          "Full-time",
+          "Part-time",
+          "Contract",
+          "Remote"
+        ]
+      },
+      {
+        "name": "salary_range",
+        "type": "text",
+        "description": "Salary range",
+        "options": null
+      },
+      {
+        "name": "description",
+        "type": "rich_text",
+        "description": "Detailed job description",
+        "options": null
+      },
+      {
+        "name": "posted_at",
+        "type": "datetime",
+        "description": "Date posted",
+        "options": null
+      }
+    ]
+  },
+  {
+    "name": "job_applications",
+    "fields": [
+      {
+        "name": "job_id",
+        "type": "text",
+        "description": "ID of the job applied for",
+        "options": null
+      },
+      {
+        "name": "applicant_name",
+        "type": "text",
+        "description": "Name of the candidate",
+        "options": null
+      },
+      {
+        "name": "applicant_email",
+        "type": "text",
+        "description": "Email of the candidate",
+        "options": null
+      },
+      {
+        "name": "applicant_phone",
+        "type": "text",
+        "description": "Phone number",
+        "options": null
+      },
+      {
+        "name": "cover_letter",
+        "type": "text",
+        "description": "Short cover letter or note",
+        "options": null
+      },
+      {
+        "name": "applied_at",
+        "type": "datetime",
+        "description": "Date applied",
+        "options": null
+      }
+    ]
+  }
+]

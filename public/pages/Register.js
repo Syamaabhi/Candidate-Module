@@ -1,5 +1,4 @@
 function Register({ onRegister, onNavigate }) {
-  
   const [formData, setFormData] = React.useState({
     name: '',
     email: '',
@@ -14,40 +13,28 @@ function Register({ onRegister, onNavigate }) {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-//m
-const handleSubmit = async () => {
-  
-  const res = await apiRegisterUser({
-    name,
-    email,
-    password
-  });
 
-  if (res.success) {
-    alert("Registration successful");
-  }
-};
-//m
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError('');
-  //   setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
-  //   try {
-  //     // Basic validation
-  //     if (formData.password.length < 6) {
-  //       throw new Error('Password must be at least 6 characters');
-  //     }
+    try {
+      // Basic validation
+      if (formData.password.length < 6) {
+        throw new Error('Password must be at least 6 characters');
+      }
 
-  //     const user = await apiRegisterUser(formData);
-  //     loginUser(user);
-  //     onRegister(user);
-  //   } catch (err) {
-  //     setError(err.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+      const user = await apiRegisterUser(formData);
+      
+      loginUser(user);
+      onRegister(user);
+    } catch (err) {
+      //setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-[80vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8">

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Dashboard - SkillMatrix</title>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+    <script>window.ChartJS = window.Chart;</script>
+    <style type="text/tailwindcss">
+    @layer theme {
+        :root {
+            --primary: #4F46E5;
+            --secondary: #10B981;
+            --surface: #ffffff;
+            --background: #F3F4F6;
+        }
+    }
+    @layer components {
+        .btn { @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2; }
+        .btn-primary { @apply bg-[var(--primary)] text-white hover:bg-indigo-700; }
+        .card { @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6; }
+    }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel" src="utils/db.js"></script>
+    <script type="text/babel" src="utils/mockParser.js"></script>
+    <script type="text/babel" src="components/NotificationCenter.js"></script>
+    <script type="text/babel" src="components/Navbar.js"></script>
+    <script type="text/babel" src="components/SkillChart.js"></script>
+    <script type="text/babel" src="components/SkillCard.js"></script>
+    <script type="text/babel" src="components/ErrorBoundary.js"></script>
+    <script type="text/babel" src="candidate-app.js"></script>
+</body>
+</html>

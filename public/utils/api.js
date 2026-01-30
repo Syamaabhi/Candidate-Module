@@ -6,58 +6,63 @@ const DB_TABLES = {
   APPLICATION: 'application'
 };
 
-// Generic error handler
-const handleApiError = (error, context) => {
-  console.error(`API Error in ${context}:`, error);
-  throw new Error(error.message || 'An unexpected error occurred');
-};
-//my
-export async function apiRegisterUser(data) {
-  const formData = new FormData();
-  Object.keys(data).forEach(key =>
-    formData.append(key, data[key])
-  );
 
-  const res = await fetch("http://localhost/student/register.php", {
+
+//mycode
+export async function apiRegisterUser(userData) {
+   alert("woerr");
+  alert(JSON.stringify(userData));
+  alert(JSON.stringify(userData));
+  const res = await fetch("http://localhost/candidatemodule/public/api/register.php", {
     method: "POST",
-    body: formData
+     body: JSON.stringify(userData),
+    headers: { "Content-Type": "application/json" }
+   
+    
   });
-
+alert(JSON.stringify(await res.json()));
   return await res.json();
 }
 
-//my
-
 // User API
-// async function apiRegisterUser(userData) {
-//   try {
-//     // // Check if email exists
-//     // const users = await trickleListObjects(DB_TABLES.USER, 100, true);
-//     // const existing = users.items.find(u => u.objectData.email === userData.email);
-    
-//     // if (existing) {
-//     //   throw new Error('Email already registered');
-//     // }
-
-//     // const result = await trickleCreateObject(DB_TABLES.USER, userData);
-//     // return { ...result.objectData, id: result.objectId };
-//   } catch (error) {
-//     handleApiError(error, 'registerUser');
-//   }
-// }
-
 export async function apiLoginUser(email, password) {
-  const formData = new FormData();
-  formData.append("email", email);
-  formData.append("password", password);
 
-  const response = await fetch("http://localhost/student/login.php", {
+  const res = await fetch("http://localhost/candidatemodule/public/api/login.php", {
     method: "POST",
-    body: formData
+    body: JSON.stringify({ email, password }) ,       // must stringify
+    headers: { "Content-Type": "application/json" } // must be JSON
   });
 
-  return await response.json();
+  const data = await res.json(); // read JSON once
+
+  if (!res.ok) {
+    
+    throw new Error(data.message);
+  }
+   
+  return data;
 }
+
+
+
+// async function apiLoginUser(email, password) {
+//   alert(email);
+//    alert(password);
+//   try {
+//     const users = await trickleListObjects(DB_TABLES.USER, 100, true);
+//     const user = users.items.find(u => 
+//       u.objectData.email === email && u.objectData.password === password
+//     );
+
+//     if (!user) {
+//       throw new Error('Invalid email or password');
+//     }
+
+//     return { ...user.objectData, id: user.objectId };
+//   } catch (error) {
+//     handleApiError(error, 'loginUser');
+//   }
+// }
 
 async function apiUpdateUser(userId, data) {
     try {
@@ -67,48 +72,68 @@ async function apiUpdateUser(userId, data) {
         handleApiError(error, 'updateUser');
     }
 }
-
-// Job API
-// async function apiGetJobs() {
-//   try {
-//     const result = await trickleListObjects(DB_TABLES.JOB, 100, true);
-//     return result.items.map(item => ({ ...item.objectData, id: item.objectId }));
-//   } catch (error) {
-//     handleApiError(error, 'getJobs');
-//   }
-// }
-
-//my
-// api.js (browser-safe, NO exports keyword issues)
-
+//mycode
 export async function apiGetJobs() {
   try {
-    const response = await fetch("http://localhost/student/jobs.php");
-    if (!response.ok) {
+    const res = await fetch("http://localhost/testremote/jobs.php");
+    if (!res.ok) {
       throw new Error("Failed to fetch jobs");
     }
-    const data = await response.json();
-    alert( data);
-    return data.jobs;
+    return await res.json();
   } catch (error) {
-    console.error("Failed to load jobs", error);
+    console.error("API Error:", error); // 🔥 inline handling
     throw error;
   }
 }
 
 
-//my
-async function apiCreateJob(jobData) {
-    try {
-        const result = await trickleCreateObject(DB_TABLES.JOB, jobData);
-        return { ...result.objectData, id: result.objectId };
-    } catch (error) {
-        handleApiError(error, 'createJob');
+
+// ✅ MUST be a function
+
+
+//mycode
+async function apiGetJobsw() {
+  try {
+    const res = await fetch("http://localhost/testremote/jobs.php");
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to fetch jobs");
     }
+
+    return data;
+  } catch (error) {
+    handleApiError(error, "apiGetJobs");
+  }
 }
 
+export async function apiCreateJob(jobData) {
+   alert(JSON.stringify(jobData));
+  const res = await fetch("http://localhost/testremote/jobadd.php", {
+    method: "POST",
+     body: JSON.stringify(jobData),
+    headers: { "Content-Type": "application/json" }
+   
+    
+  });
+alert(JSON.stringify(await res.json()));
+  return await res.json();
+}
+// async function apiCreateJob(jobData) {
+//     alert(JSON.stringify(jobData));
+  
+//     try {
+//         const result = await trickleCreateObject(DB_TABLES.JOB, jobData);
+//         return { ...result.objectData, id: result.objectId };
+//     } catch (error) {
+//         handleApiError(error, 'createJob');
+//     }
+// }
+
 // Application API
-async function apiApplyForJob(applicationData) {
+
+export async function apiApplyForJob(applicationData) {
+  
   try {
     const result = await trickleCreateObject(DB_TABLES.APPLICATION, {
         ...applicationData,
@@ -122,30 +147,46 @@ async function apiApplyForJob(applicationData) {
   }
 }
 
-async function apiGetMyApplications(candidateId) {
-    try {
-        // Since we can't filter by field in listObjects, we fetch all and filter client side
-        // In a real app with index, this would be optimized
-        const result = await trickleListObjects(DB_TABLES.APPLICATION, 100, true);
-        const allApplications = result.items.map(item => ({...item.objectData, id: item.objectId}));
+
+
+export async function apiGetMyApplications(candidateId) {
+ 
+  const res = await fetch(
+    `http://localhost/jobportalnaukiri/get_applications.php?candidate_id=${candidateId}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch applications");
+  }
+
+  const data = await res.json();
+
+  return data.applications;
+
+  // alert(candidateId);
+  //   try {
+  //       // Since we can't filter by field in listObjects, we fetch all and filter client side
+  //       // In a real app with index, this would be optimized
+  //       // const result = await trickleListObjects(DB_TABLES.APPLICATION, 100, true);
+  //       // const allApplications = result.items.map(item => ({...item.objectData, id: item.objectId}));
         
-        // Enhance with job details
-        const jobs = await apiGetJobs();
+  //       // Enhance with job details
+  //       const jobs = await apiGetJobs();
         
-        return allApplications
-            .filter(app => app.candidate_id === candidateId)
-            .map(app => {
-                const job = jobs.find(j => j.id === app.job_id);
-                return { 
-                    ...app, 
-                    job_title: job ? job.title : 'Unknown Job',
-                    job_description: job ? job.description : '',
-                    job_skills: job ? job.skills : []
-                };
-            });
-    } catch (error) {
-        handleApiError(error, 'getMyApplications');
-    }
+  //       return allApplications
+  //           .filter(app => app.candidate_id === candidateId)
+  //           .map(app => {
+  //               const job = jobs.find(j => j.id === app.job_id);
+  //               return { 
+  //                   ...app, 
+  //                   job_title: job ? job.title : 'Unknown Job',
+  //                   job_description: job ? job.description : '',
+  //                   job_skills: job ? job.skills : []
+  //               };
+  //           });
+  //   } catch (error) {
+  //       handleApiError(error, 'getMyApplications');
+  //   }
 }
 
 async function apiGetJobApplications(jobId) {
@@ -174,6 +215,9 @@ async function apiGetJobApplications(jobId) {
 }
 
 async function apiUpdateApplication(appId, data) {
+window.alert(appId);
+window.alert(data);
+  
     try {
         const result = await trickleUpdateObject(DB_TABLES.APPLICATION, appId, data);
         return { ...result.objectData, id: result.objectId };

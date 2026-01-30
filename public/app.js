@@ -1,5 +1,5 @@
 // Main App Component
-const { useState, useEffect } = React;
+// const { useState, useEffect } = React;
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -40,18 +40,18 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
-
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = React.useState('home');
+  const [user, setUser] =  React.useState(null);
+  const [loading, setLoading] =  React.useState(true);
 
-  useEffect(() => {
+  React.useEffect(() => {
     checkAuth();
   }, []);
 
   const checkAuth = async () => {
     const currentUser = getCurrentUser();
+   
     if (currentUser) {
       setUser(currentUser);
       // Redirect to dashboard if on auth pages
@@ -69,8 +69,49 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    setCurrentPage(userData.role === 'recruiter' ? 'recruiter-dashboard' : 'dashboard');
-  };
+    console.log("Logged in user:", userData);
+    alert("haiiihello");
+    alert(userData.user_role);
+
+    // Redirect based on role
+    switch(userData.user_role) {
+        case 'admin':
+            setCurrentPage('recruiter-dashboard');
+           // setCurrentPage('recruiter-dashboard');
+            break;
+        case 'candidate':
+            setCurrentPage('dashboard');
+            break;
+      case 'recruiter': {
+  // Save auth info
+  sessionStorage.setItem(
+    "auth_user",
+    JSON.stringify({
+      id: userData.user_id,
+      role: userData.user_role
+    })
+  );
+
+  // Redirect WITHOUT user_id in URL
+  window.location.href =
+    "http://localhost/candidatemodule/Recruter/admin.html";
+  break;
+}
+;
+
+
+        default:
+            setCurrentPage('home'); // fallback page
+    }
+};
+
+  // const handleLogin = (userData) => {
+  //   setUser(userData);
+  //    window.alert(JSON.stringify(userData));
+  //   setCurrentPage(userData.role === 'recruiter' ? 'recruiter-dashboard' : 'dashboard');
+  //     // setCurrentPage(userData.role === 'candidate' ? 'candidate-dashboard' : 'homeop');
+  //     //   setCurrentPage(userData.role === 'student' ? 'student-dashboard' : 'profile');
+  // };
 
   const handleLogout = () => {
     logoutUser();
@@ -90,6 +131,8 @@ function App() {
     switch (currentPage) {
       case 'home':
         return <Home onNavigate={handleNavigate} user={user} />;
+         case 'homeop':
+        return <Homeop onNavigate={handleNavigate} user={user} />;
       case 'login':
         return <Login onLogin={handleLogin} onNavigate={handleNavigate} />;
       case 'register':
@@ -98,8 +141,20 @@ function App() {
         return <Dashboard user={user} onNavigate={handleNavigate} />;
       case 'recruiter-dashboard':
         return <RecruiterDashboard user={user} onNavigate={handleNavigate} />;
-      case 'jobs':
+         case 'admin':
+        return <AdminApp user={user} onNavigate={handleNavigate} />;
+         case 'student-dashboard':
+        return <AdminApp user={user} onNavigate={handleNavigate} />;
+         case 'jobApplicationChat':
+        return <JobApplicationChat user={user} onNavigate={handleNavigate} />;
+        case 'jobs':
         return <JobBoard user={user} onNavigate={handleNavigate} />;
+        case 'jobss':
+        return <Homere user={user} onNavigate={handleNavigate} />;
+        case 'notifications':
+        return <NotificationCenter user={user} onNavigate={handleNavigate} />;
+        case 'noticed':
+        return <Noti user={user} onNavigate={handleNavigate} />;
       case 'profile':
         return <Profile user={user} onUpdateUser={setUser} />;
       default:

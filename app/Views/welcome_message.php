@@ -1,20 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
+    <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/01/26/08/20260126081020-Z7I60QUY.js" defer></script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Job Portal - Smart Hiring Platform</title>
-    <meta name="description" content="AI-driven job portal connecting talent with opportunities through smart matching and automated interviews.">
+    <title>JobSeek - Find Your Dream Job</title>
+    <meta name="description" content="Find and apply for the best jobs in tech, design, and more.">
+    <meta name="keywords" content="jobs, career, hiring, tech jobs, remote work">
+    
+    <!-- React & Babel -->
     <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
     <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
     
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+
+    <!-- Chart.js (if needed later) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+    <script>const ChartJS = window.Chart;</script>
+
     <style type="text/tailwindcss">
     @layer theme {
         :root {
             --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --bg-light: #f8fafc;
+             --primary: #2563eb;
             --primary-dark: #1d4ed8;
             --secondary: #64748b;
             --success: #10b981;
@@ -24,38 +43,70 @@
             --surface: #ffffff;
         }
     }
-    
-    body {
-        background-color: var(--background);
-        font-family: 'Inter', sans-serif;
+
+    @layer components {
+        .btn {
+            @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+        }
+        .btn-primary {
+            @apply bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)] focus:ring-[var(--primary)];
+        }
+        .btn-outline {
+            @apply border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-[var(--primary)];
+        }
+        .input-field {
+            @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)] outline-none transition-all;
+        }
+        .card {
+            @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+        }
     }
     </style>
 </head>
-<body>
+<body class="bg-[var(--bg-light)] text-gray-900 font-sans antialiased">
     <div id="root"></div>
-    
-    <!-- Utilities -->
+
+    <!-- Scripts -->
+    <!-- Define db globally before babel scripts run to avoid scope issues -->
+       
+   
+   <script src="/libs/chart.umd.min.js"></script>
+
+    <script type="text/babel" src="utils/db.js"></script>
+    <script type="text/babel" src="components/ui/Alert.js"></script>
+    <script type="text/babel" src="components/ui/Modal.js"></script>
+    <script type="text/babel" src="components/Header.js"></script>
+    <script type="text/babel" src="components/JobCard.js"></script>
+    <script type="text/babel" src="components/JobApplicationForm.js"></script>
+    <script type="text/babel" src="app.js"></script>
+    <script type="text/babel" src="apj.js"></script>
+
+     <!-- Utilities -->
     <script type="text/babel" src="utils/api.js"></script>
     <script type="text/babel" src="utils/auth.js"></script>
     
     <!-- Components -->
-    <script type="text/babel" src="components/Layout.js"></script>
-    <script type="text/babel" src="components/Alert.js"></script>
-    <script type="text/babel" src="components/Button.js"></script>
-    <script type="text/babel" src="components/Input.js"></script>
-    <script type="text/babel" src="components/JobCard.js"></script>
-    <script type="text/babel" src="components/InterviewSession.js"></script>
+    <script type="text/babel" src="components/test/Layout.js"></script>
+    <script type="text/babel" src="components/test/Alert.js"></script>
+    <script type="text/babel" src="components/test/Button.js"></script>
+    <script type="text/babel" src="components/test/Input.js"></script>
+    <script type="text/babel" src="components/test/JobCard.js"></script>
+    <script type="text/babel" src="components/test/InterviewSession.js"></script>
     
     <!-- Pages -->
     <script type="text/babel" src="pages/Home.js"></script>
+     <script type="text/babel" src="pages/Homeop.js"></script>
     <script type="text/babel" src="pages/Login.js"></script>
     <script type="text/babel" src="pages/Register.js"></script>
     <script type="text/babel" src="pages/Dashboard.js"></script>
     <script type="text/babel" src="pages/JobBoard.js"></script>
     <script type="text/babel" src="pages/Profile.js"></script>
     <script type="text/babel" src="pages/RecruiterDashboard.js"></script>
+    <script type="text/babel" src="pages/RecruiterDashboard.js"></script>
+    <!-- <script type="text/babel" src="pages/AdminApp.js"></script> -->
 
     <!-- Main Entry -->
-    <script type="text/babel" src="app.js"></script>
+    <!-- <script type="text/babel" src="test/app.js"></script> -->
+   
 </body>
 </html>

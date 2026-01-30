@@ -1,4 +1,5 @@
 function RecruiterDashboard({ user, onNavigate }) {
+    alert("ll");
   const [activeTab, setActiveTab] = React.useState('jobs');
   const [jobs, setJobs] = React.useState([]);
   const [newJob, setNewJob] = React.useState({
@@ -15,23 +16,28 @@ function RecruiterDashboard({ user, onNavigate }) {
   }, [user]);
 
   const loadJobs = async () => {
+   
       try {
           const allJobs = await apiGetJobs();
+        
           // Filter jobs created by this recruiter
-          const myJobs = allJobs.filter(j => j.recruiter_id === user.id);
-          setJobs(myJobs);
+          const myJobs = allJobs.filter(j => j.recruiter_id === 3);
+         alert(JSON.stringify(myJobs));
+         
+                    setJobs(myJobs);
       } catch (error) {
           console.error(error);
       }
   };
 
   const handleCreateJob = async (e) => {
+    alert("llll");
       e.preventDefault();
       setLoading(true);
       try {
           const jobData = {
               ...newJob,
-              recruiter_id: user.id,
+              recruiter_id: "3",
               skills: newJob.skills.split(',').map(s => s.trim())
           };
           await apiCreateJob(jobData);
@@ -49,6 +55,13 @@ function RecruiterDashboard({ user, onNavigate }) {
     <div className="space-y-6">
         <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8">
+                 <button
+                    onClick={() => setActiveTab('jobs')}
+                    className={`${activeTab === 'jobs' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                >
+                   Job Posting
+                </button>
+                
                 <button
                     onClick={() => setActiveTab('jobs')}
                     className={`${activeTab === 'jobs' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
@@ -60,6 +73,18 @@ function RecruiterDashboard({ user, onNavigate }) {
                     className={`${activeTab === 'create' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
                 >
                     Post New Job
+                </button>
+                <button
+                    onClick={() => setActiveTab('create')}
+                    className={`${activeTab === 'create' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                >
+                    My Company
+                </button>
+                <button
+                    onClick={() => setActiveTab('create')}
+                    className={`${activeTab === 'create' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                >
+                    Job Application
                 </button>
             </nav>
         </div>
